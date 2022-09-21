@@ -34,6 +34,9 @@ footer, header, hgroup, menu, nav, section {
 body {
 	line-height: 1;
     font-family: Open-Sans, Helvetica, Sans-Serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 ol, ul {
 	list-style: none;
