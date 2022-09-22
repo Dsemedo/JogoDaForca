@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import {useState} from "react";
 import styled from "styled-components";
 import GlobalStyle from "./GlobalStyle";
 import forca0 from "./assets/forca0.png";
@@ -6,12 +6,36 @@ import forca0 from "./assets/forca0.png";
 
 export default function App() {
 
-    const [inicio, setInicio] = useState(false);
-
     const alfabetoCompleto = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+
+    const [inicio, setInicio] = useState(false);
+    const [letras, setLetras] = useState([alfabetoCompleto], true);
+    const [letrasSelecionadas, setLetrasSelecionadas] = useState([])
+
 
     function BotaoIniciar() {
       setInicio(!inicio);
+      setLetras(!letras)
+      console.log(inicio);
+    }
+
+    function DesabilitarLetra(numero){
+       const letraClicada = [...letrasSelecionadas, numero];
+       setLetrasSelecionadas(letraClicada);
+    }
+    console.log(letrasSelecionadas);
+
+
+    function Letra(props) {
+        return (
+            letras ?
+            <Desabilitado onClick={() => DesabilitarLetra(props.numero)}>
+            {props.letraIndividual}
+        </Desabilitado>  : 
+            <Habilitado >
+            {props.letraIndividual}
+        </Habilitado>
+        )
     }
 
     return (
@@ -35,7 +59,11 @@ export default function App() {
             <Baixo>
                 <Alfabeto>
 
-                    {alfabetoCompleto.map((caractere) => <Letra letraIndividual={caractere.toUpperCase()} />)}
+
+
+                    {alfabetoCompleto.map((caractere, index) => 
+                    <Letra numero={index} letraIndividual={caractere.toUpperCase()} />)}
+
                 </Alfabeto>
                 <Resposta>
                     <span>Já sei a palavra!</span>
@@ -51,13 +79,7 @@ export default function App() {
     )
 }
 
-function Letra(props) {
-    return (
-        <button  onClick={() => alert(`${props.letraIndividual}`)}>
-            {props.letraIndividual}
-        </button>
-    )
-}
+
 
 
 const Container = styled.div`
@@ -100,8 +122,10 @@ flex-wrap:wrap;
 width: 100%;
 height:100px;
 background-color: yellow;
+`
 
-button {
+const Desabilitado = styled.button`
+
     margin-right: 6px;
     width: 50px;
     height: 40px;
@@ -110,8 +134,18 @@ button {
     color: black;
     opacity: 90%;
 
-}
 `
+
+const Habilitado = styled.button`
+    margin-right: 6px;
+    width: 50px;
+    height: 40px;
+    border-radius: 10%;
+    background-color: #9acddc;
+    color: black;
+    opacity: 90%;
+`
+
 
 const Baixo = styled.div`
 margin-top: 20px;
@@ -165,4 +199,3 @@ const PalavraForca = styled.div`
     background-color: red;
 
 `
-
