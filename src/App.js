@@ -1,7 +1,15 @@
-import {useState} from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import GlobalStyle from "./GlobalStyle";
+import palavras from "./palavras";
 import forca0 from "./assets/forca0.png";
+import forca1 from "./assets/forca1.png";
+import forca2 from "./assets/forca2.png";
+import forca3 from "./assets/forca3.png";
+import forca4 from "./assets/forca4.png";
+import forca5 from "./assets/forca5.png";
+
+// colocar imagem em um usestate, toda vez que errar, muda o usestate
 
 
 export default function App() {
@@ -9,33 +17,89 @@ export default function App() {
     const alfabetoCompleto = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
     const [inicio, setInicio] = useState(false);
-    const [letras, setLetras] = useState([alfabetoCompleto], true);
-    const [letrasSelecionadas, setLetrasSelecionadas] = useState([])
+    const [letras, setLetras] = useState(false);
+    const [letrasSelecionadas, setLetrasSelecionadas] = useState([]);
+    const [palavraSorteada, setPalavraSorteada] = useState("");
+    const [letrasErradas, setLetrasErradas] = useState([]);
+    const [errosForca, setErrosForca] = useState(forca0);
+
 
 
     function BotaoIniciar() {
-      setInicio(!inicio);
-      setLetras(!letras)
-      console.log(inicio);
+        setInicio(!inicio);
+        setLetras(!letras);
+        setPalavraSorteada(...palavraSorteada.toUpperCase(), palavras[Math.floor(Math.random() * palavras.length)])
+        console.log(inicio);
     }
 
-    function DesabilitarLetra(numero){
-       const letraClicada = [...letrasSelecionadas, numero];
-       setLetrasSelecionadas(letraClicada);
+    const palavraSemAcento = palavraSorteada.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+    const palavraModificada = palavraSemAcento.toUpperCase().split("");
+    console.log(palavraModificada);
+
+    function DesabilitarLetra(letraClicada) {
+        setLetrasSelecionadas([...letrasSelecionadas, letraClicada]);
+
+        if (palavraModificada.includes(letraClicada)) {
+            alert("letra certa")
+        } else {
+            setLetrasErradas([...letrasErradas, letraClicada])
+        }
+
+        if (letrasErradas.length = 1) {
+            setErrosForca(forca1)
+        } else if (letrasErradas.length == 2) {
+            setErrosForca(forca2)
+        } else if (letrasErradas.length == 3) {
+            setErrosForca(forca3)
+        } else if (letrasErradas.length == 4) {
+            setErrosForca(forca4)
+        } else if (letrasErradas.length == 5) {
+            setErrosForca(forca5)
+        }
+
+        switch (setErrosForca) {
+            case letrasErradas.length = 1:
+                setErrosForca(forca1);
+                break;
+            case letrasErradas.length = 2:
+                setErrosForca(forca2);
+                break;
+            case letrasErradas.length = 3:
+                setErrosForca(forca3);
+                break;
+            case letrasErradas.length = 4:
+                setErrosForca(forca4);
+                break;
+            case letrasErradas.length = 5:
+                setErrosForca(forca5);
+                break;
+        }
+
     }
-    console.log(letrasSelecionadas);
+
+    console.log(errosForca);
+    console.log(letrasErradas.length);
+
 
 
     function Letra(props) {
-        return (
-            letras ?
-            <Desabilitado onClick={() => DesabilitarLetra(props.numero)}>
-            {props.letraIndividual}
-        </Desabilitado>  : 
-            <Habilitado >
-            {props.letraIndividual}
-        </Habilitado>
-        )
+
+        if (letrasSelecionadas.includes(props.letraIndividual) || letras === false) {
+            return (
+                <Desabilitado disabled >
+                    {props.letraIndividual}
+                </Desabilitado>
+            )
+        } else {
+            return (
+
+                <Habilitado onClick={() => DesabilitarLetra(props.letraIndividual)} >
+                    {props.letraIndividual}
+                </Habilitado>)
+
+        }
+
     }
 
     return (
@@ -43,34 +107,33 @@ export default function App() {
             <GlobalStyle />
             <Container>
 
-            <Cima>
-                <ImagemForca src={forca0} />
-                <LadoDireito>
-                    <BotaoEscolher onClick={BotaoIniciar}>
-                        Escolher Palavra
-                    </BotaoEscolher>
+                <Cima>
+                    <ImagemForca src={errosForca} />
+                    <LadoDireito>
+                        <BotaoEscolher onClick={BotaoIniciar}>
+                            Escolher Palavra
+                        </BotaoEscolher>
 
-                    <PalavraForca>
-                    
-                    </PalavraForca>
-                </LadoDireito>
-            </Cima>
+                        <PalavraForca>
+                            {palavraSorteada.toUpperCase()}
+                        </PalavraForca>
+                    </LadoDireito>
+                </Cima>
 
-            <Baixo>
-                <Alfabeto>
+                <Baixo>
+                    <Alfabeto>
+                        {alfabetoCompleto.map((caractere, index) =>
+                            <Letra numero={index} letraIndividual={caractere.toUpperCase()} />)}
 
-
-
-                    {alfabetoCompleto.map((caractere, index) => 
-                    <Letra numero={index} letraIndividual={caractere.toUpperCase()} />)}
-
-                </Alfabeto>
-                <Resposta>
-                    <span>Já sei a palavra!</span>
-                    <input placeholder="Olá" />
-                    <button />
-                </Resposta>
-            </Baixo>
+                    </Alfabeto>
+                    <Resposta>
+                        <span>Já sei a palavra!</span>
+                        <input placeholder="Olá" />
+                        <button>
+                            Chutar
+                        </button>
+                    </Resposta>
+                </Baixo>
 
             </Container>
 
@@ -162,7 +225,6 @@ const Cima = styled.div`
 display:flex;
 flex-direction: row;
 justify-content: space-around;
-background-color: yellowgreen;
 width: 1000px;
 `
 
@@ -196,6 +258,8 @@ background-color: gray;
 const PalavraForca = styled.div`
     width: 100%;
     height: 60px;
-    background-color: red;
-
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    font-size: 25px;
 `
