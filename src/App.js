@@ -1,15 +1,14 @@
 import { useState } from "react";
 import styled from "styled-components";
 import GlobalStyle from "./GlobalStyle";
-import palavras from "./palavras";
+import sorteada from "./palavras";
 import forca0 from "./assets/forca0.png";
 import forca1 from "./assets/forca1.png";
 import forca2 from "./assets/forca2.png";
 import forca3 from "./assets/forca3.png";
 import forca4 from "./assets/forca4.png";
 import forca5 from "./assets/forca5.png";
-
-// colocar imagem em um usestate, toda vez que errar, muda o usestate
+import forca6 from "./assets/forca6.png";
 
 
 export default function App() {
@@ -19,69 +18,66 @@ export default function App() {
     const [inicio, setInicio] = useState(false);
     const [letras, setLetras] = useState(false);
     const [letrasSelecionadas, setLetrasSelecionadas] = useState([]);
-    const [palavraSorteada, setPalavraSorteada] = useState("");
+    const [palavraSorteada, setPalavraSorteada] = useState(``);
     const [letrasErradas, setLetrasErradas] = useState([]);
+    const [letrasCertas, setLetrasCertas] = useState([]);
     const [errosForca, setErrosForca] = useState(forca0);
+    const [respostaInput, setRespostaInput] = useState("");
 
 
-
+    
     function BotaoIniciar() {
         setInicio(!inicio);
-        setLetras(!letras);
-        setPalavraSorteada(...palavraSorteada.toUpperCase(), palavras[Math.floor(Math.random() * palavras.length)])
-        console.log(inicio);
+        setLetras(true);
+       setPalavraSorteada(`${sorteada}`)
     }
 
-    const palavraSemAcento = palavraSorteada.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+    console.log(palavraSorteada)
+    const palavraMaiusc = palavraSorteada.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
-    const palavraModificada = palavraSemAcento.toUpperCase().split("");
-    console.log(palavraModificada);
+    const palavraModificada = palavraMaiusc.split("");
+
+
+    //Habilitar e desabilitar letras
 
     function DesabilitarLetra(letraClicada) {
-        setLetrasSelecionadas([...letrasSelecionadas, letraClicada]);
+        const letrinhasErradas = [...letrasErradas, letraClicada]
+        // const letrinhasCertas = [...letrasCertas, letraClicada]
+
+        setLetrasSelecionadas([...letrasSelecionadas, letraClicada])
+
 
         if (palavraModificada.includes(letraClicada)) {
-            alert("letra certa")
+            for (let i = 0; i < palavraModificada.length; i++) {
+                if (letraClicada === palavraModificada[i]) {
+                    console.log(`achei a letra ${letraClicada}`);
+                    letrasCertas.push(letraClicada);
+                }
+            } setLetrasCertas(letrasCertas);
         } else {
-            setLetrasErradas([...letrasErradas, letraClicada])
+            setLetrasErradas(letrinhasErradas);
         }
 
-        if (letrasErradas.length = 1) {
+
+        if (letrasErradas.length === 1) {
             setErrosForca(forca1)
-        } else if (letrasErradas.length == 2) {
+        } else if (letrasErradas.length === 2) {
             setErrosForca(forca2)
-        } else if (letrasErradas.length == 3) {
+        } else if (letrasErradas.length === 3) {
             setErrosForca(forca3)
-        } else if (letrasErradas.length == 4) {
+        } else if (letrasErradas.length === 4) {
             setErrosForca(forca4)
-        } else if (letrasErradas.length == 5) {
+        } else if (letrasErradas.length === 5) {
             setErrosForca(forca5)
-        }
-
-        switch (setErrosForca) {
-            case letrasErradas.length = 1:
-                setErrosForca(forca1);
-                break;
-            case letrasErradas.length = 2:
-                setErrosForca(forca2);
-                break;
-            case letrasErradas.length = 3:
-                setErrosForca(forca3);
-                break;
-            case letrasErradas.length = 4:
-                setErrosForca(forca4);
-                break;
-            case letrasErradas.length = 5:
-                setErrosForca(forca5);
-                break;
+        } else if (letrasErradas.length === 6) {
+            setErrosForca(forca6)
+            alert("Você perdeu!!")
+            setLetras(false);
         }
 
     }
 
-    console.log(errosForca);
-    console.log(letrasErradas.length);
-
-
+    // Imprimir cada letra
 
     function Letra(props) {
 
@@ -93,13 +89,54 @@ export default function App() {
             )
         } else {
             return (
-
                 <Habilitado onClick={() => DesabilitarLetra(props.letraIndividual)} >
                     {props.letraIndividual}
                 </Habilitado>)
-
         }
 
+    }
+
+    // Enviar pelo input
+
+    function EnviarResposta() {
+        if (respostaInput.toUpperCase() === palavraMaiusc) {
+            alert("Parabéns, vc ganhou!")
+            setRespostaInput("")
+            setLetras(false)
+
+        } else {
+            alert("Voce perdeu");
+            setErrosForca(forca6);
+            setRespostaInput("")
+        }
+    }
+
+    function TrocarPalavra() {
+        if (errosForca === forca6) {
+            return (
+                <RespostaVermelho>
+                    {palavraMaiusc}
+                </RespostaVermelho>
+            )
+        }
+        else if (letrasCertas.length === palavraModificada.length) {
+            setLetras(false);
+            return (
+                <RespostaVerde>
+                    {() => alert("Parabéns, voce ganhou!")}
+                    {palavraSorteada.toUpperCase()}
+                </RespostaVerde>
+            )
+        }
+        else {
+            return (
+                <PalavraForca>
+
+                    {palavraModificada.map((letra, index) => letrasCertas.includes(letra) ? letra : " _")}
+
+                </PalavraForca>
+            )
+        }
     }
 
     return (
@@ -114,9 +151,8 @@ export default function App() {
                             Escolher Palavra
                         </BotaoEscolher>
 
-                        <PalavraForca>
-                            {palavraSorteada.toUpperCase()}
-                        </PalavraForca>
+                        <TrocarPalavra />
+
                     </LadoDireito>
                 </Cima>
 
@@ -128,8 +164,8 @@ export default function App() {
                     </Alfabeto>
                     <Resposta>
                         <span>Já sei a palavra!</span>
-                        <input placeholder="Olá" />
-                        <button>
+                        <input onChange={(e) => setRespostaInput(e.target.value)} value={respostaInput} placeholder="Olá" />
+                        <button onClick={EnviarResposta}>
                             Chutar
                         </button>
                     </Resposta>
@@ -154,10 +190,19 @@ justify-content: center;
 align-items: center;
 `
 
+const RespostaVermelho = styled.span`
+    color: red;
+    font-size: 26px;
+`
+
+const RespostaVerde = styled.span`
+    color: green;
+    font-size: 26px;
+`
+
 const Resposta = styled.div`
 width: 500px;
 height: 50px;
-background-color: red;
 display:flex;
 justify-content: space-around;
 align-items: center;
@@ -184,7 +229,6 @@ flex-direction: row;
 flex-wrap:wrap;
 width: 100%;
 height:100px;
-background-color: yellow;
 `
 
 const Desabilitado = styled.button`
@@ -218,7 +262,6 @@ display: flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
-background-color:blue;
 `
 
 const Cima = styled.div`
@@ -252,7 +295,6 @@ flex-direction: column;
 justify-content: space-between;
 align-items: center;
 width: 250px;
-background-color: gray;
 `
 
 const PalavraForca = styled.div`
