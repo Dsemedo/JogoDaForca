@@ -23,17 +23,17 @@ export default function App() {
     const [letrasCertas, setLetrasCertas] = useState([]);
     const [errosForca, setErrosForca] = useState(forca0);
     const [respostaInput, setRespostaInput] = useState("");
+    const [respostaEnviada, setRespostaEnviada] = useState(false);
 
 
-    
+
     function BotaoIniciar() {
         setInicio(!inicio);
         setLetras(true);
-       setPalavraSorteada(`${sorteada}`)
+        setPalavraSorteada(`${sorteada}`)
     }
 
-    console.log(palavraSorteada)
-    const palavraMaiusc = palavraSorteada.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+       const palavraMaiusc = palavraSorteada.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
     const palavraModificada = palavraMaiusc.split("");
 
@@ -42,7 +42,8 @@ export default function App() {
 
     function DesabilitarLetra(letraClicada) {
         const letrinhasErradas = [...letrasErradas, letraClicada]
-        // const letrinhasCertas = [...letrasCertas, letraClicada]
+
+        // const letrinhasCertas = [...letrasCertas, letraClicada] <- falar sobre isso com o tutor depois
 
         setLetrasSelecionadas([...letrasSelecionadas, letraClicada])
 
@@ -51,7 +52,6 @@ export default function App() {
         if (palavraModificada.includes(letraClicada)) {
             for (let i = 0; i < palavraModificada.length; i++) {
                 if (letraClicada === palavraModificada[i]) {
-                    console.log(`achei a letra ${letraClicada}`);
                     letrasCertas.push(letraClicada);
                 }
             } setLetrasCertas(letrasCertas);
@@ -101,17 +101,15 @@ export default function App() {
     // Enviar pelo input
 
     function EnviarResposta() {
+        setRespostaEnviada(true)
         if (respostaInput.toUpperCase() === palavraMaiusc || respostaInput.toUpperCase() === palavraSorteada.toUpperCase()) {
             alert("Parabéns, vc ganhou!")
-            setRespostaInput("")
             setLetras(false)
 
-
-
         } else {
+            setLetras(false)
             alert("Voce perdeu");
             setErrosForca(forca6);
-            setRespostaInput("")
         }
     }
 
@@ -119,11 +117,11 @@ export default function App() {
         if (errosForca === forca6) {
             return (
                 <RespostaVermelho>
-                    {palavraMaiusc}
+                    {palavraSorteada.toUpperCase()}
                 </RespostaVermelho>
             )
         }
-        else if (letrasCertas.length === palavraModificada.length) {
+        else if ((letrasCertas.length === palavraModificada.length) || (respostaEnviada === true &&respostaInput.toUpperCase() === palavraMaiusc) || (respostaEnviada === true && respostaInput.toUpperCase() === palavraSorteada.toUpperCase())) {
             setLetras(false);
             return (
                 <RespostaVerde>
