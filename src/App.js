@@ -47,6 +47,7 @@ export default function App() {
         setLetrasSelecionadas([...letrasSelecionadas, letraClicada])
 
 
+
         if (palavraModificada.includes(letraClicada)) {
             for (let i = 0; i < palavraModificada.length; i++) {
                 if (letraClicada === palavraModificada[i]) {
@@ -58,6 +59,14 @@ export default function App() {
             setLetrasErradas(letrinhasErradas);
         }
 
+
+
+
+    }
+
+    // Imprimir cada letra
+
+    function Letra(props) {
 
         if (letrasErradas.length === 1) {
             setErrosForca(forca1)
@@ -71,15 +80,8 @@ export default function App() {
             setErrosForca(forca5)
         } else if (letrasErradas.length === 6) {
             setErrosForca(forca6)
-            alert("Você perdeu!!")
             setLetras(false);
         }
-
-    }
-
-    // Imprimir cada letra
-
-    function Letra(props) {
 
         if (letrasSelecionadas.includes(props.letraIndividual) || letras === false) {
             return (
@@ -99,10 +101,12 @@ export default function App() {
     // Enviar pelo input
 
     function EnviarResposta() {
-        if (respostaInput.toUpperCase() === palavraMaiusc) {
+        if (respostaInput.toUpperCase() === palavraMaiusc || respostaInput.toUpperCase() === palavraSorteada.toUpperCase()) {
             alert("Parabéns, vc ganhou!")
             setRespostaInput("")
             setLetras(false)
+
+
 
         } else {
             alert("Voce perdeu");
@@ -132,7 +136,7 @@ export default function App() {
             return (
                 <PalavraForca>
 
-                    {palavraModificada.map((letra, index) => letrasCertas.includes(letra) ? letra : " _")}
+                    {palavraModificada.map((letra, index) => letrasCertas.includes(letra) ? ` ${letra}` : " _")}
 
                 </PalavraForca>
             )
@@ -145,13 +149,13 @@ export default function App() {
             <Container>
 
                 <Cima>
-                    <ImagemForca src={errosForca} />
+                    <ImagemForca data-identifier="game-image" src={errosForca} />
                     <LadoDireito>
-                        <BotaoEscolher onClick={BotaoIniciar}>
+                        <BotaoEscolher data-identifier="choose-word" onClick={BotaoIniciar}>
                             Escolher Palavra
                         </BotaoEscolher>
 
-                        <TrocarPalavra />
+                        <TrocarPalavra data-identifier="word" />
 
                     </LadoDireito>
                 </Cima>
@@ -159,13 +163,13 @@ export default function App() {
                 <Baixo>
                     <Alfabeto>
                         {alfabetoCompleto.map((caractere, index) =>
-                            <Letra numero={index} letraIndividual={caractere.toUpperCase()} />)}
+                            <Letra data-identifier="letter" numero={index} letraIndividual={caractere.toUpperCase()} />)}
 
                     </Alfabeto>
                     <Resposta>
                         <span>Já sei a palavra!</span>
-                        <input onChange={(e) => setRespostaInput(e.target.value)} value={respostaInput} placeholder="Olá" />
-                        <button onClick={EnviarResposta}>
+                        <input data-identifier="type-guess" onChange={(e) => setRespostaInput(e.target.value)} value={respostaInput} placeholder="Olá" />
+                        <button data-identifier="guess-button" onClick={EnviarResposta}>
                             Chutar
                         </button>
                     </Resposta>
